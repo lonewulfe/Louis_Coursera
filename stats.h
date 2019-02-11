@@ -28,15 +28,15 @@
  *
  * <The 4 results are passed to this function as reference>
  *
- * @int <min> <The least value>
- * @int <max> <the highest value>
+ * @unsigned char <min> <The least value>
+ * @unsigned char <max> <the highest value>
  * @int <mean> <the average value>
- * @int <median1> <The first median>
- * @int <median2> <The second median>	
+ * @unsigned char <median1> <The first median>
+ * @unsigned char <median2> <The second median>	
  * @return <void>
  */
 
-void print_statistics(int min, int max,int mean, int median1, int median2);
+void print_statistics(unsigned char min, unsigned char max,int mean, unsigned char median1, unsigned char median2);
 
 
 /**
@@ -44,12 +44,12 @@ void print_statistics(int min, int max,int mean, int median1, int median2);
  *
  * <The function prints the original array as it is>
  *
- * @int <a[]> <Array name>
+ * @unsigned char <a[]> <Array name>
  * @int <size> <The number of elements in the array>
  *
  * @return <void>
  */
-void print_array(int a[], int size);
+void print_array(unsigned char a[], int size);
 
 
 /**
@@ -57,13 +57,13 @@ void print_array(int a[], int size);
  *
  * <Two medians exist for this array with even number of elements>
  *
- * @int <a[]> <array name>
+ * @unsigned char <a[]> <array name>
  * @int <size> <the number of elements in the array>
- * @int <medians> <array containing one or two medians>
+ * @unsigned char <medians> <array containing one or two medians>
  *
  * @return <void>
  */
-void find_median(int a[],int size,int medians);
+void find_median(unsigned char a[],int size,unsigned char medians[]);
 
 
 /**
@@ -71,12 +71,12 @@ void find_median(int a[],int size,int medians);
  *
  * <The function is used for finding the average of the array>
  *
- * @int <a[]> <array variable name>
+ * @unsigned char <a[]> <array variable name>
  * @int <size> <number of array elements>
  *
  * @return <int mean>
  */
-int find_mean(int a[],int size);
+int find_mean(unsigned char a[],int size);
 
 
 /**
@@ -84,12 +84,12 @@ int find_mean(int a[],int size);
  *
  * <The function finds the first element in the sorted array and then displays it>
  *
- * @int <a[]> <array variable name>
+ * @unsigned char <a[]> <array variable name>
  * @int <size> <number of array elements>
  *
- * @return <int max>
+ * @return <unsigned char max>
  */
-int find_maximum(int a[],int size);
+unsigned char find_maximum(unsigned char a[],int size);
 
 
 /**
@@ -97,12 +97,12 @@ int find_maximum(int a[],int size);
  *
  * <The function finds the last element in the sorted array and then displays it>
  *
- * @int <a[]> <array variable name>
+ * @unsigned char <a[]> <array variable name>
  * @int <size> <number of array elements>
  *
- * @return <int min>
+ * @return <unsigned char min>
  */
-int find_minimum(int a[],int size);
+unsigned char find_minimum(unsigned char a[],int size);
 
 
 /**
@@ -110,12 +110,12 @@ int find_minimum(int a[],int size);
  *
  * <This function sorts the elements using q sort>
  *
- * @int <a[]> <array variable name>
+ * @unsigned char <a[]> <array variable name>
  * @int <size> <number of array elements>
  *
  * @return <void>
  */
-void sort_array(int a[], int size);
+void sort_array(unsigned char a[], int size);
 
 
 #endif /* __STATS_H__ */
