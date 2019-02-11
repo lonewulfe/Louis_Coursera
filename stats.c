@@ -9,13 +9,13 @@
  *
  *****************************************************************************/
 /**
- * @file <Add File Name> 
- * @brief <Add Brief Description Here >
+ * @file stats.c 
+ * @brief File containing the function bodies of the functions delared in stats.h and the main function. 
  *
- * <Add Extended Description Here>
+ * This program sorts the array and finds the mean, median, maximum and minimum and displays it.
  *
- * @author <Add FirsName LastName>
- * @date <Add date >
+ * @author Joel Louis
+ * @date 2-11-2019
  *
  */
 
@@ -41,3 +41,36 @@ void main() {
 }
 
 /* Add other Implementation File Code Here */
+void sort_array(int a[], int size)
+{
+
+}
+
+void find_median(int a[],int size, int medians[])
+{
+
+}
+int find_mean(int a[],int size)
+{
+
+}
+
+int find_maximum(int a[],int size)
+{
+
+}
+
+int find_minimum(int a[],int size)
+{
+
+}
+
+void print_array(int a[], int size)
+{
+
+}
+
+void print_statistics(int min, int max, int mean, int median1, int median2)
+{
+
+}
