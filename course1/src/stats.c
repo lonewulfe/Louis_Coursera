@@ -9,13 +9,14 @@
  *
  *****************************************************************************/
 /**
- * @file stats.c 
- * @brief File containing the function bodies of the functions delared in stats.h and the main function. 
+ * @file stats.s
+ * @brief Assignment 1 source code
  *
- * This program sorts the array and finds the mean, median, maximum and minimum and displays it.
+ * Main function and implementation of other functions live here. 
+ * See stats.h for function documentation
  *
  * @author Joel Louis
- * @date 2-11-2019
+ * @date 2019-06-21
  *
  */
 
@@ -26,101 +27,183 @@
 
 /* Size of the Data Set */
 #define SIZE (40)
+#define UCHAR_MAX (255)
 
-void main()
-{
+bool isArraySorted = FALSE;
+
+void main() {
+
   unsigned char test[SIZE] = { 34, 201, 190, 154,   8, 194,   2,   6,
                               114, 88,   45,  76, 123,  87,  25,  23,
                               200, 122, 150, 90,   92,  87, 177, 244,
                               201,   6,  12,  60,   8,   2,   5,  67,
                                 7,  87, 250, 230,  99,   3, 100,  90};
-
-  /* Other Variable Declarations Go Here */
-  /* Statistics and Printing Functions Go Here */
-    
-    int mean=0,med1,med2;
-    int min,max;          
-    printf("The array is: \n");
-    print_array(test,SIZE);
-    sort_array(test,SIZE);
-    printf("\nThe sorted array is: \n");
-    print_array(test,SIZE);
-    min=find_minimum(test,SIZE);
-    max=find_maximum(test,SIZE);
-    mean=find_mean(test,SIZE);
-    unsigned char medians[2] ;
-    find_median(test,SIZE, medians);
-    med1=medians[0];
-    med2=medians[1];
-    print_statistics(min,max,mean,med1,med2);
-}
-
-
-
+//
+//  /* Other Variable Declarations Go Here */
+//  /* Statistics and Printing Functions Go Here */
+//  print_statistics(test, SIZE);
+//
+//}
 
 /* Add other Implementation File Code Here */
-void sort_array(unsigned char a[], int size)
-{
-	int i,j;
-	for(i=0;i<size;i++)
-		for(j=i+1;j<size;j++)
-			if (a[i]<a[j])
-			{
-				unsigned char temp=a[i];
-				a[i]=a[j];
-				a[j]=temp;
-			}
+/*See stats.h for doumentation*/
+unsigned char print_statistics(unsigned char * arrPtr, int length){
+  unsigned char sortResult;
+  unsigned char arrayMaxValue;
+  unsigned char arrayMinValue;
+  unsigned char arrayMeanValue;
+  unsigned char arrayMedianValue;
+  
+  PRINTF("Starting array analysis...\n");
+  print_array(arrPtr, length);
+  PRINTF("Array size:\t\t%i\n", length);
+  
+  if(isArraySorted == FALSE){
+    PRINTF("Array is not sorted... Sorting using bubble sort...\n");
+    sortResult = sort_array(arrPtr, length);
+  }
+  
+  if(sortResult != CODE_SUCCESS){
+    PRINTF("Oopps... array_sort returned with error\n");
+    return 1;
+  } 
+  PRINTF("Well done!\nSorted array:");
+  print_array(arrPtr, length);
+  
+  PRINTF("Computing array max value...\n");
+  arrayMaxValue = find_maximum(arrPtr, length);
+  PRINTF("Array max value:\t%i\n", arrayMaxValue);
+  
+  PRINTF("Computing array min value...\n");
+  arrayMinValue = find_minimum(arrPtr, length);
+  PRINTF("Array min value:\t%i\n", arrayMinValue);
+    
+  PRINTF("Computing array mean value...\n");
+  arrayMeanValue = find_mean(arrPtr, length);
+  PRINTF("Array mean value:\t%i\n", arrayMeanValue);
+      
+  PRINTF("Computing array median value...\n");
+  arrayMedianValue = find_median(arrPtr, length);
+  PRINTF("Array median value:\t%i\n", arrayMedianValue);
+  return 0;	
+}
+/*See stats.h for doumentation*/
+unsigned char print_array(unsigned char * arrPtr, int length){
+#ifndef VERBOSE
+    return 0;
+#endif
+  int index = 0;
+  PRINTF("[");
+  while(1){
+    printf("%hhu", arrPtr[index]);
+    if(index == length - 1){
+      PRINTF("]\n");
+      return 0;
+    }else{
+      PRINTF(", ");
+    }
+    index = index + 1;
+  }
+  return 1; /*it will never occure normally*/
+}
+/*See stats.h for doumentation*/
+unsigned char find_median(unsigned char * arrPtr, int length){
+  if(isArraySorted == FALSE){
+	sort_array(arrPtr, length);
+  }
+  if(length%2==0) {
+    return((arrPtr[length/2] + arrPtr[length/2 - 1]) / 2);
+  } else {
+    return arrPtr[length/2];
+  }	
+}
+/*See stats.h for doumentation*/
+unsigned char find_mean(unsigned char * arrPtr, int length){
+  unsigned char mean;
+  int index = 0;
+  int arraySum = 0;
+  while(1){
+    if(index == length){
+      break;
+    }
+    arraySum = arraySum + (int)arrPtr[index];
+	index = index+1;
+  }
+  mean = arraySum / length;
+  return mean;	
+}
+/*See stats.h for doumentation*/
+unsigned char find_maximum(unsigned char * arrPtr, int length){
+  unsigned char result = 0;
+  int index = 0;
+  while(1) {
+    if(index == length){
+      break;
+    }
+    if(result < arrPtr[index]){
+      result = arrPtr[index];
+    }
+    index = index + 1;
+  }
+  return result;	
+}
+/*See stats.h for doumentation*/
+unsigned char find_minimum(unsigned char * arrPtr, int length){
+  unsigned char result = UCHAR_MAX;
+  int index = 0;
+  while(1) {
+    if(index == length){
+      break;
+    }
+    if(result > arrPtr[index]){
+      result = arrPtr[index];
+    }
+    index = index + 1;
+  }
+  return result;	
+}
+/*See stats.h for doumentation*/
+unsigned char sort_array(unsigned char * arrPtr, int length) {
+	int outerLoopIndex = 0;
+  while(1){
+    if(outerLoopIndex == length - 1){
+      isArraySorted = TRUE;
+      return 0;
+    }
+    int f = 0;
+    int min = outerLoopIndex;
+    int innerLoopIndex = outerLoopIndex;
+    while(1){
+      if(innerLoopIndex == length - outerLoopIndex){
+	break;
+      }
+      if(arrPtr[innerLoopIndex] < arrPtr[innerLoopIndex+1]){
+	unsigned char swapA = arrPtr[innerLoopIndex];
+	unsigned char swapB = arrPtr[innerLoopIndex + 1];
+	arrPtr[innerLoopIndex] = swapB;
+	arrPtr[innerLoopIndex + 1] = swapA;
+	f = 1;
+      }
+      if(arrPtr[innerLoopIndex] > arrPtr[min]){
+	min = innerLoopIndex;
+      }
+      innerLoopIndex += 1;
+    }
+    if(f == 0){
+      isArraySorted = TRUE;
+      return 0;
+    }
+    if(min < outerLoopIndex || min > outerLoopIndex){
+      unsigned char swapA = arrPtr[outerLoopIndex];
+      unsigned char swapB = arrPtr[min];
+      arrPtr[outerLoopIndex] = swapB;
+      arrPtr[min] = swapA;
+    }
+    outerLoopIndex += 1;
+  }
+    
+  return 1;
 }
 
 
-void find_median(unsigned char a[],int size, unsigned char medians[])
-{
-    int med1=size/2;
-    int med2=size/2 +1;
-    unsigned char meddd1=a[med1];
-    unsigned char meddd2=a[med2];
-    medians[0] = meddd1;
-    medians[1]=meddd2;
-}
 
-int find_mean(unsigned char a[],int size)
-{
-	int mean=0;
-	for (int i = 0; i < size; ++i)
-	{
-		mean+=a[i];
-	}
-	mean=mean/size;
-	return mean;
-}
-
-unsigned char find_maximum(unsigned char a[],int size)
-{
-	unsigned char max;
-	max = a[0];
-	return max;
-}
-unsigned char find_minimum(unsigned char a[],int size)
-{
-	unsigned char min;
-	min = a[39];
-	return min;
-}
-
-void print_array(unsigned char a[], int size)
-{
-	int i=0;
-	for (i=0; i<size; i++)
-	{
-		printf("%d,\t",a[i] );
-	}
-}
-
-
-void print_statistics(unsigned char min, unsigned char max, int mean, unsigned char median1, unsigned char median2)
-{
-	printf("\nMean = %d\n", mean);
-	printf("The two medians are %d and %d\n", median1,median2);
-	printf("The maximum value in the array is %d\n", max);
-	printf("The minimum value in the array is %d\n", min);
-}
