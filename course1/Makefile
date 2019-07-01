@@ -10,7 +10,7 @@
 #*****************************************************************************
 
 #------------------------------------------------------------------------------
-# <I TOOK SO LONG TO DO THIS>
+# <Put a Description Here>
 #
 # Use: make [TARGET] [PLATFORM-OVERRIDES]
 #
@@ -23,69 +23,102 @@
 #------------------------------------------------------------------------------
 include sources.mk
 
-TARGET=c1m2
 # Platform Overrides
-	PLATFORM = HOST
+PLATFORM = HOST
 
-# Dependency Flags
-	DEPENDENCY = -MM -MF 
-
-# Architectures Specific Flags
-	LINKER_FILE = -T msp432p401r.lds
-	CPU = cortex-m4
-	ARCH = thumb
-	SPECS = nosys.specs
-	FPU = fpv4-sp-d16
-	MFLOAT = hard
-	MARCH = armv7e-m
-
-# Compiler Flags and Defines
-
-ifeq ($(PLATFORM),HOST)
-	CC = gcc
-	LD = 
-	LDFLAGS =-Wl,-Map=$(TARGET).map
-	CFLAGS =-Wall -Werror -g -O0 -std=c99
-	CPPFLAGS = -DHOST
-else
-	CC = arm-none-eabi-gcc
-	LD = arm-none-eabi-ld
-	LDFLAGS =-Wl,-Map=$(TARGET).map $(LINKER_FILE)
-	CFLAGS = -Wall -Werror -g -O0 -std=c99 -mcpu=$(CPU) -m$(ARCH) --specs=$(SPECS) -march=$(MARCH) -mfpu=$(FPU) -mfloat-abi=$(MFLOAT) -Wall
-	CPPFLAGS = -DMSP432 
+DFLAGS = -D$(PLATFORM)
+ifdef COURSE1
+    DFLAGS := $(DFLAGS) -DCOURSE1
 endif
 
-# Rules
+ifdef VERBOSE
+    DFLAGS := $(DFLAGS) -DVERBOSE
+endif
 
-OBJS = $(SOURCES:.c=.o)	
+# Architectures Specific Flags
+LINKER_FILE = ./msp432p401r.lds
 
+CPU = cortex-m4
+THUMB = thumb
+ARCH = armv7e-m
+SPECS = nosys.specs
+FLOAT = hard
+FPU = fpv4-sp-d16
 
+# Compiler Flags and Defines
+CC = gcc
+LD = ld
+LDFLAGS = -Wl,-Map=c1m2.map
 
-%.o : %.c
-	$(CC) $(CFLAGS) $(CPPFLAGS) $(LDFLAGS) $(SOURCES) -o $@
+#general compiler flags for both platforms
+CFLAGS = -Wall\
+        -Werror\
+         -g\
+         -O0\
+         -std=c99 $(DFLAGS)
+#object files		 
+OBJS = $(SOURCES:.c=.o)
+#output file name
+TARGET = c1final.out
+#platform dependent changes
+ifeq ($(PLATFORM),HOST)
+    CC = gcc
+else
+    CC = arm-none-eabi-gcc
+	CFLAGS := $(CFLAGS) -mcpu=$(CPU) -m$(THUMB) --specs=$(SPECS) -mfloat-abi=$(FLOAT) -mfpu=$(FPU) -march=$(ARCH)
+    LD = arm-none-eabi-ld
+	LDFLAGS := $(LDFLAGS) -T $(LINKER_FILE)
+endif
 
-
-%.asm: %.i 
-	$(CC) $(CFLAGS) $(CPPFLAGS) $(LDFLAGS) -S 
-	objdump -D $(OBJS)
-
-%.i: %.c
-	$(CC) $(CFLAGS) -D$(PLATFORM) -MD -E $(SOURCES)
-
-
-.PHONY: compile-all
-compile-all:
-	$(CC) -c $(CFLAGS) $(CPPFLAGS) $(LDFLAGS) $(SOURCES) 
-
+#make build target
 .PHONY: build
-build: all
+build: $(TARGET)
+$(TARGET) : $(OBJS)
+	$(CC) $(OBJS) $(CFLAGS) $(INCLUDES) $(LDFLAGS) -o $@
 
-.PHONY: all
-all: $(TARGET).out
-
-$(TARGET).out: main.o memory.o
-	$(CC) main.o memory.o $(CFLAGS) $(LDFLAGS) -o $@
-
+#building object files
+%.o: %.c
+	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@  
+#building assembly files
+%.asm: %.c
+	$(CC) $(CFLAGS) $(INCLUDES) -S $< -o $@
+#create preprocessed files
+%.i: %.c
+	$(CC) $(CFLAGS) $(INCLUDES) -E $< -o $@
+#create dep files
+%.d: %.c
+	$(CC) $(CFLAGS) $(INCLUDES) -M -MP $< -o $@
+#compile all sources
+.PHONY: compile-all
+compile-all: $(TARGET)
+	$(CC) $(OBJS) $(CFLAGS) $(LDFLAGS) -c -o $@
+#make clean target, removes all generated files
 .PHONY: clean
 clean:
-	rm -f $(OBJS) $(TARGET).o $(TARGET).out $(TARGET).map *.o *.gch *.d
+	@printf "clean project directory"
+	@rm -f ./src/*.o
+	@printf ".."
+	@rm -f ./src/*.i
+	@printf ".."
+	@rm -f ./src/*.map
+	@printf ".."
+	@rm -f ./*.map
+	@printf ".."
+	@rm -f ./src/*.out
+	@printf ".."
+	@rm -f ./*.out
+	@printf ".."
+	@rm -f ./src/*.asm
+	@printf ".."
+	@rm -f ./src/*.d
+	@printf "....\n"
+	@echo "cleaning complete"
+#debug target for printing variables
+.PHONY: printinfo
+printinfo:
+	@echo "SOURCES" $(SOURCES)
+	@echo "OBJECTS" $(OBJS)
+	@echo "COMPILER (CC)" $(CC)
+	@echo "CFLAGS" $(CFLAGS)
+	@echo "LDFLAGS" $(LDFLAGS)
+	@echo "DFLAGS" $(DFLAGS)
